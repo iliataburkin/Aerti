@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AERTI Калькулятор Лесенка</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 480px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            font-size: 22px;
+        }
+        .deposit-block {
+            background: #f0f0f0;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        .actions {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        button {
+            padding: 12px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 6px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            background: #e7f3e7;
+            padding: 15px;
+            border-left: 5px solid #28a745;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AERTI Калькулятор "Лесенка"</h1>
+
+        <label for="rate">Годовая ставка (%):</label>
+        <input type="number" id="rate" placeholder="Например, 12" />
+
+        <div id="deposits"></div>
+
+        <div class="actions">
+            <button onclick="addDeposit()">+ Добавить вклад</button>
+            <button onclick="calculate()">Рассчитать</button>
+        </div>
+
+        <div id="result" class="result" style="display:none;"></div>
+    </div>
+
+    <script>
+        function addDeposit() {
+            const container = document.getElementById('deposits');
+            const block = document.createElement('div');
+            block.className = 'deposit-block';
+            block.innerHTML = `
+                <label>Сумма вклада (₽):</label>
+                <input type="number" class="amount" placeholder="Введите сумму">
+                <label>Срок (в днях):</label>
+                <input type="number" class="days" placeholder="Введите срок">
+            `;
+            container.appendChild(block);
+        }
+
+        function calculate() {
+            const rate = parseFloat(document.getElementById('rate').value);
+            const amounts = document.querySelectorAll('.amount');
+            const days = document.querySelectorAll('.days');
+            const resultDiv = document.getElementById('result');
+
+            if (isNaN(rate) || rate <= 0) {
+                alert("Введите корректную процентную ставку");
+                return;
+            }
+
+            let totalInterest = 0;
+            let resultHTML = '<strong>Результаты расчёта:</strong><br><br>';
+
+            for (let i = 0; i < amounts.length; i++) {
+                const amount = parseFloat(amounts[i].value);
+                const day = parseInt(days[i].value);
+
+                if (isNaN(amount) || isNaN(day) || amount <= 0 || day <= 0) {
+                    alert("Заполните все поля вкладов корректно");
+                    return;
+                }
+
+                const interest = amount * (rate / 100) * (day / 365);
+                totalInterest += interest;
+                resultHTML += `Вклад ${i + 1}: сумма ${amount.toFixed(2)}₽, срок ${day} дн., доход: ${interest.toFixed(2)}₽<br>`;
+            }
+
+            resultHTML += `<br><strong>Общий доход:</strong> ${totalInterest.toFixed(2)}₽`;
+            resultDiv.innerHTML = resultHTML;
+            resultDiv.style.display = 'block';
+        }
+
+        window.onload = addDeposit;
+    </script>
+</body>
+</html>
